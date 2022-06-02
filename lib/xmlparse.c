@@ -1973,6 +1973,11 @@ XML_GetBuffer(XML_Parser parser, int len)
     keep = (int)(bufferPtr - buffer);
     if (keep > XML_CONTEXT_BYTES)
       keep = XML_CONTEXT_BYTES;
+    /* Detect and prevent integer overflow */
+    if (keep > INT_MAX - neededSize) {
+      errorCode = XML_ERROR_NO_MEMORY;
+      return NULL;
+    }
     neededSize += keep;
 #endif  /* defined XML_CONTEXT_BYTES */
     if (neededSize  <= bufferLim - buffer) {
